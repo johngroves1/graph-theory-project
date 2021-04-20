@@ -47,7 +47,7 @@ def shunt(infix):
     return postfix
 
 if __name__ == "__main__":
-    for infix in ["a.(b.b)*.a", "1.(0.0)*.1"]:
+    for infix in ["a.(b.b)*.a", "1.(0.0)*.1", "((a*b)+(c|d))"]:
         print(f"infix:  {infix}")
         print(f"postfix:  {shunt(infix)}")
         print()
