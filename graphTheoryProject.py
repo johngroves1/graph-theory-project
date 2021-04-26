@@ -3,7 +3,6 @@
 # https://github.com/johngroves1/graph-theory-project
     
 """Convert infix expressions to postfix using the Shunting Yard Algorithm"""
-
 def shunt(infix):
     """Convert infix expressions to postfix."""
 
@@ -49,9 +48,7 @@ def shunt(infix):
     # Return the postfix version of infix.
     return postfix
 
-
 """Thompsons Construction"""
-
 class State:
     """A state and its arrows in Thompson's construction. """
     def __init__(self, label, arrows, accept):
@@ -61,11 +58,45 @@ class State:
         self.arrows = arrows
         self.accept = accept
 
+    def followes(self):
+        """The set of states that are gotten from following this state 
+        and all its e arrows."""
+        # Include this state in the returned set.
+        states = {self}
+        # If this state has e arrows, i.e. label is None.
+        if self.label is None:
+            # Loop through this state's arrows.
+            for state in self.arrows:
+                # Incorporate that state's e arrow states in states.
+                states = (states | state.followes())
+        # Returns the set of states.
+        return states
+
 class NFA:
     """A non-deterministic finite automaton. """
     def __init__(self, start, end):
         self.start = start
         self.end = end
+
+    def match(self, s):
+
+        """Return True if this NFA (instance) matches the string s"""
+        # A list of previous states that we are still in.
+        previous = self.start.followes()
+        # Loop through the string, a character at a time.
+        for c in s:
+            # Start wth an empty set of current states.
+            current = set()
+            # Loop through the previous states,
+            for state in previous:
+                # Check if there is a c arrow from state.
+                if state.label == c:
+                    # Add followes to current.
+                    current = (current | state.arrows[0].followes())
+            # Replace previous with current.
+            previous = current
+        # If the final state is in previous, then return True.
+        return (self.end in previous)
 
 def re_to_nfa(postfix):
     # A stack for NFAs.
@@ -154,15 +185,22 @@ def re_to_nfa(postfix):
     else:
         return stack[0]
 
-
 if __name__ == "__main__":
-    for infix in ["a.(b.b)*.a", "1.(0.0)*.1", "((a*b)+(c|d))"]:
+    tests = [ ["(a.b|b*)", ["ab", "b", "bb", "a"]]
+            , ["a.(b.b)*.a", ["aa", "abba", "aba"]]
+            , ["1.(0.0)*.1", ["11", "100001", "11001"]]
+    ]
+    
+    # Test case for program.
+    for test in tests:
+        infix = test[0]
         print(f"infix:  {infix}")
-        print(f"postfix:  {shunt(infix)}")
-        print()
-
-    for postfix in ["abb.*.a.", "100.*.1.", "ab|"]:
-        print(f"postfix:  {postfix}")
-        print(f"nfa:  {re_to_nfa(postfix)}")
+        postfix = shunt(infix)
+        print(f"postfix: {postfix}")
+        nfa = re_to_nfa(postfix)
+        print(f"thompson: {nfa}")
+        for s in test[1]:
+            match = nfa.match(s)
+            print(f"Match '{s}': {match}")
         print()
 
