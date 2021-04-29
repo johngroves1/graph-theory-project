@@ -24,20 +24,44 @@ The first step I needed to take on the project was to convert the regular expres
 
 After implementing Shunting Yards algorithm, the next step will be to transform the postfix regular expression into a nondeterministic finite automaton using the Thompson's construction. An algorithm created by Ken Thompson, a pioneer in computer science. Thompsons algorithm reads in a postfix expression and passes in one character at a time into a smaller NFA. As the entire expression is passed through the algorithm, it builds into a larger NFA, depending on what operator is passed into the NFA the outcome is different. On doing research on thomsons algorithm I found this [website](http://www.cs.may.ie/staff/jpower/Courses/Previous/parsing/node5.html) which really demonstrates what each operator does in terms of the NFA. Referencing this page and looking back at the previous lecture content helped me to fully understand the code that I have written. There was no real way for me to test this algorithm as the NFA returns a memory address, however using the last lab video on April 15th as guidance I was able to create a function that could determine if a set of characters would pass through the NFA and returning "True" if the set ends in an accept state or otherwise "False".
 
-Now that I was comfortable that I had the logical side of the program completeted, I moved on to reading in a string from a text file as stated in the project brief.
-
-
-
-
-
-
-
-
-# Description of repository
+Now that I was comfortable that I had the logical side of the program completeted, I moved on to reading in a string from a text file as stated in the project brief. I went on w3schools to learn about file reading, after testing a file read of a single string. I added "The Odysses" by the famous greek author Homer, as my text file. I then wrote a function that would loop through each word in the text file and match with the entered expression, I added a counter that incremented anytime there was a match and populated an array with the matched text. I then went on to create a simple menu where the user can choose from a set of predfined expressions and matches or the choice to search their own expression through the textfile. Lastly I cleaned up my code and added any extra comments necessary.
 
 # Instructions on how to run and test program
+* On running the program, the user is presented with a menu where they can choose between a set of predefined expressions or they can enter an infix expression to search through the provided text file. ![alt text](https://github.com/johngroves1/graph-theory-project/blob/main/UserGuideImages/Menucmd.PNG)
+
+* When the user enters '1' a set of predefined infix expressions and matching strings are printed to the console. ![alt text](https://github.com/johngroves1/graph-theory-project/blob/main/UserGuideImages/predefined.PNG)
+
+* If the user enters '2' they are prompt to enter an infix expression to search through the text file. The algorithm will break if the user enters two characters without concatenation or if the syntax of the expression is wrong. In the example below the user entered the expression ((b.e.d)|(r.o.o.m)) to match all words of bed and room.![alt text](https://github.com/johngroves1/graph-theory-project/blob/main/UserGuideImages/EnteredExpression.PNG)
+
+* When the user enters an expression to search through the text file, each word in the novel "The Odysses" is matched to the input. All words that do match with the inputted expression are outputted to a list and a counter displays how many words matched. ![alt text](https://github.com/johngroves1/graph-theory-project/blob/main/UserGuideImages/MatchingOutput.PNG)
+
+* If the users enters a wrong number in the menu they are prompt to enter a valid number again, if the user wishes to exit the program they can enter '3'.
 
 # Explanation of your algorithm
+
+### Infix to postfix conversion using the Shunting Yard Algorithm:
+ * The algorithm loops through the expression one character at a time. If the input is a letter or number, append directly to the output queue.
+ * If the input is an operator, push to operator stack. If an operator already exists on top of the operator stack with higher or equal precedence than the current input symbol, remove the operator from the top of the stack and append it to the output queue. Repeat until the current operator input has a higher precedence than the operator on the stack or until the stack is empty.
+ * If the input is '(' append it to operator stack
+ * If the input is ')' pop all operators from the stack and append to the output queue, pop the left bracket from the stack and discard both brackets
+ * If any operators are left in the stack add too the output queue.
+
+### Thompsons construction algorithm 
+This algorithm works by reading in the postfix expression and splitting each operator into a smaller expression, from which an NFA is constructed using that operators set of rules. Each NFA has a start state and end state, when the nfa reaches the end state it is added to an overall NFA stack. Below are how each operator works in the algorithm
+* ### Concatenation '.'
+  Creates two NFA's where the first NFA's accept state is the second NFA's start state which connects both NFA's and pushes to the NFA stack.
+  
+* ### Or '|'
+  Creates two NFA's and pops of the stack, creates a new start state and accept state. Makes a new start state point at the old start states and makes the old accept states non-  accept. Using the 'e' arrows, to point the old accept states of both NFA's to a new accept state and push to the NFA stack.
+  
+ * ### Kleene Star '*'
+ Pop one NFA off the stack and create a new start and end state. Using the 'e' arrows to point the new start state to the old start state of the NFA. Create another 'e' arrow to the new accept state and set the 'e' arrow of the initial accept state back to the initial state of the NFA which allows for repetition of the expression. 
+ 
+### Matching Algorithm
+The Match algorithm checks to see if the converted infix expression matches with the given string of text. It first calls the shunting algorithm to convert the entered expression to postfix and then passes the postfix expression through the thompsons algorithm. It creates a set of all previous states that the expression is still in and the set of current states that it will be in. It then it loops through the string a character at a time in the current set to check if the set contains the characters of the expression, if so it adds the next state and makes the previous set equal to the current set and loop through again. At the end of the current set if all characters are in the accept state then the function returns true and the enterted expression matches with the String of text, if not it returns false and the String does not match with any of the expressions NFA.
+
+### fileread()
+Reads in the text file "input.txt" which contains the novel "The Odysses". Loops through the text file reading in word by word and matching each word to the entered infix expression returning all words True or False. It also counts how many words matched in the search and outputs the count and the matched words to a list. 
 
 # Answer Questions in own words up to 500 words
 
