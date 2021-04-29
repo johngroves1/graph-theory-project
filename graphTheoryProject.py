@@ -188,6 +188,7 @@ def predefinedExpressions():
     # Test expressions and match strings
     tests = [ ["(a.b|b*)", ["ab", "b", "bb", "a"]]
             , ["a.(b.b)*.a", ["aa", "abba", "aba"]]
+            , ["(b.r.a.v.e.s.t)", ["brave", "bravest", "aba"]]
             , ["1.(0.0)*.1", ["11", "100001", "11001"]]
     ]
     # Loop through each expression
