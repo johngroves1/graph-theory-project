@@ -182,47 +182,58 @@ def re_to_nfa(postfix):
         return None
     else:
         return stack[0]
+
 # Predefined Infix Expressions
 def predefinedExpressions():
-    tests = [ ["(a.b|b*)"]
-            , ["a.(b.b)*.a"]
-            , ["1.(0.0)*.1"]
-            ]
+    # Test expressions and match strings
+    tests = [ ["(a.b|b*)", ["ab", "b", "bb", "a"]]
+            , ["a.(b.b)*.a", ["aa", "abba", "aba"]]
+            , ["1.(0.0)*.1", ["11", "100001", "11001"]]
+    ]
+    # Loop through each expression
     for test in tests:
-            infix = test[0]
-            print(f"infix:  {infix}")
-            postfix = shunt(infix)
-            print(f"postfix: {postfix}\n")
-    print()
+        infix = test[0]
+        print(f"infix:  {infix}")
+        postfix = shunt(infix)
+        print(f"postfix: {postfix}")
+        nfa = re_to_nfa(postfix)
+        for s in test[1]:
+            match = nfa.match(s)
+            print(f"Match '{s}': {match}")
+        print()
 
-# Reading in a text file
+# Reading in a text file and matching entered expression
 def fileread():
-    f = open("input.txt", "r")
-    infix =  print(f.read())
-    print(f"infix:  {infix}")
-
-# User input into algorithm
-def userInput():
-    infix = input("Enter Infix Expression: ")
-    print(f"infix: {infix}")
-    postfix = shunt(infix)
-    print(f"postfix: {postfix}")
-    print()
+    matchlist = []
+    matchcounter = 0
+    infix = input("Enter Infix Expression to match with text file: (Note all characters have to be seperated by a .)")
+    with open("input.txt", "r") as f:
+        for line in f:
+            postfix = shunt(infix)
+            nfa = re_to_nfa(postfix)
+            for expression in line.split():
+                match = nfa.match(expression)
+                print(f"Match '{expression}': {match}")
+                # If expression matches a word from text, add to array
+                if(match == True):
+                    matchlist.append(expression)
+                    # True match counter
+                    matchcounter+= 1
+        print()
+    print(f"Matches: {matchcounter}")
+    print(matchlist)
 
 if __name__ == "__main__":
-    
-# UI Menu
+    # UI Menu
     options=True
 while options:
-    print("\n1: Print predefined list of expressions \n2: Enter infix expression \n3: Read in text file \n4: Exit Program \nPlease enter an option (1-4):")
-    options = input()
+    options = input("\n1: Print predefined list of expressions \n2: Read in text file and match entered expression\n3: Exit Program \nPlease enter an option (1-3):")
+    print()
     if options == "1":
         predefinedExpressions()
     elif options == "2":
-        userInput()
-    elif options == "3":
         fileread()   
-    elif options == "4":
+    elif options == "3":
         print("\nExiting Program")
         options = False
     else:
