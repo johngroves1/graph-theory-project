@@ -13,9 +13,7 @@ def shunt(infix):
     # Operator precedence.
     prec = {'*': 100, '.': 90, '|': 80 }
     # Loop through the input a character at a time.
-    for c in infix:
-        # c is a digit
-       
+    for c in infix:       
         # c is an operator.
         if c in {'*', '.', '|'}:
             # Check what is on the stack.
@@ -184,23 +182,50 @@ def re_to_nfa(postfix):
         return None
     else:
         return stack[0]
+# Predefined Infix Expressions
+def predefinedExpressions():
+    tests = [ ["(a.b|b*)"]
+            , ["a.(b.b)*.a"]
+            , ["1.(0.0)*.1"]
+            ]
+    for test in tests:
+            infix = test[0]
+            print(f"infix:  {infix}")
+            postfix = shunt(infix)
+            print(f"postfix: {postfix}\n")
+    print()
+
+# Reading in a text file
+def fileread():
+    f = open("input.txt", "r")
+    infix =  print(f.read())
+    print(f"infix:  {infix}")
+
+# User input into algorithm
+def userInput():
+    infix = input("Enter Infix Expression: ")
+    print(f"infix: {infix}")
+    postfix = shunt(infix)
+    print(f"postfix: {postfix}")
+    print()
 
 if __name__ == "__main__":
-    tests = [ ["(a.b|b*)", ["ab", "b", "bb", "a"]]
-            , ["a.(b.b)*.a", ["aa", "abba", "aba"]]
-            , ["1.(0.0)*.1", ["11", "100001", "11001"]]
-    ]
     
-    # Test case for program.
-    for test in tests:
-        infix = test[0]
-        print(f"infix:  {infix}")
-        postfix = shunt(infix)
-        print(f"postfix: {postfix}")
-        nfa = re_to_nfa(postfix)
-        print(f"thompson: {nfa}")
-        for s in test[1]:
-            match = nfa.match(s)
-            print(f"Match '{s}': {match}")
-        print()
+# UI Menu
+    options=True
+while options:
+    print("\n1: Print predefined list of expressions \n2: Enter infix expression \n3: Read in text file \n4: Exit Program \nPlease enter an option (1-4):")
+    options = input()
+    if options == "1":
+        predefinedExpressions()
+    elif options == "2":
+        userInput()
+    elif options == "3":
+        fileread()   
+    elif options == "4":
+        print("\nExiting Program")
+        options = False
+    else:
+        print("\nNot a valid number, try again")
 
+    
